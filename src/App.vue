@@ -1,10 +1,20 @@
 <script setup>
-
+import HeaderDesktop from './components/HeaderDesktop.vue';
+import FooterPage from './components/FooterPage.vue';
+ 
 </script>
 
 <template>
-<h1>Hello World</h1>
+  <div id="app">
+    <HeaderDesktop />
+    
+    
+    <router-view />
+    
+    <FooterPage />
+  </div>
 </template>
+
 
 <style scoped>
 
