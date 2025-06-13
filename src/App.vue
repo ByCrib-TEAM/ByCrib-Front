@@ -1,10 +1,13 @@
 <script setup>
-// import HeaderDesktop from './components/HeaderDesktop.vue';
-// import FooterPage from './components/FooterPage.vue';
+ import HeaderDesktop from './components/HeaderDesktop.vue';
+ import FooterPage from './components/FooterPage.vue';
 </script>
 
 <template>
-<h1>HelloWorld</h1>
+
+        <HeaderDesktop />
+        <FooterPage />
+
 </template>
 
 <style scoped>

@@ -34,20 +34,7 @@ watch(showSearch, async (val) => {
         <!-- menu + pesquisa -->
         <div class="flex items-center space-x-4">
           <button class="text-gray-900 dark:text-white cursor-pointer" @click="openMenu">
-            <svg
-              class="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              ></path>
-            </svg>
+            <img src="/src/images/icons8-cardápio-50.png" alt="Menu icon" class="h-6 w-6" />
           </button>
 
           <!-- input com lupa (aparece  em telas grandes) -->
