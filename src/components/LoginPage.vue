@@ -46,10 +46,10 @@ const handleLogin = async () => {
     // Simular delay da API
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    alert('Login realizado com sucesso!')
+   
 
     // Navegar para dashboard após login
-    router.push('/dashboard')
+    router.push('/')
 
   } catch (error) {
     console.error('Erro no login:', error)
