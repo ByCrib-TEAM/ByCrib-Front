@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue'
 import SideMenu from './SideMenu.vue'
+import { RouterLink } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
@@ -61,17 +62,23 @@ watch(showSearch, async (val) => {
         <div
           class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
         >
-          <img
+        
+          <RouterLink to="/"><img
             src="/src/images/cribLogo_no_background 1.png"
             alt="Logo"
             class="h-8"
           />
+          </RouterLink>
         </div>
 
         <!-- ícones -->
-        <div class="flex space-x-8">
-          <img src="/src/images/User.png" alt="" class="h-6" />
-          <img src="/src/images/Shopaholic.png" alt="" class="h-6" />
+        <div class="flex space-x-8"> 
+          <RouterLink to="/LoginPage">
+            <img src="/src/images/User.png" alt="" class="h-6" />
+          </RouterLink>
+          <RouterLink to="/">
+            <img src="/src/images/Shopaholic.png" alt="" class="h-6" />
+          </RouterLink>
         </div>
       </div>
     </div>
