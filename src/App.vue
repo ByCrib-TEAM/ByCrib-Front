@@ -11,9 +11,7 @@ import FooterPage from './components/FooterPage.vue';
     
     <router-view />
 
-    <div class="imagehome"> <img src="../src/images/Home.png" alt="" />
-    
-    </div>
+   
 
     <FooterPage />
   </div>
@@ -22,15 +20,5 @@ import FooterPage from './components/FooterPage.vue';
 
 <style scoped>
 
-.imagehome {
-  display: flex;
-  align-items: center;
-  justify-content: center
-}
-
-.imagehome img {
-  width: 100%;
-  height: auto;
-}
 
 </style>
