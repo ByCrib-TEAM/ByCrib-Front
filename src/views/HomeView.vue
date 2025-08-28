@@ -85,7 +85,7 @@ const isSpecialProduct = (productName) => {
             <div class="relative group cursor-pointer">
               <div 
                 :class="[
-                  'w-24 h-24 rounded-full border-3 overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105',
+                  'w-58 h-58 rounded-full border-3 overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105',
                   isSpecialProduct(product.name) ? 'border-blue-500' : 'border-gray-200'
                 ]"
               >
