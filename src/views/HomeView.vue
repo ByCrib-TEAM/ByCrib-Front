@@ -1,10 +1,9 @@
 <script setup>
-import { ref, computed,  } from 'vue'
+import { ref, computed } from 'vue'
 
 // Estado reativo
 const currentIndex = ref(0)
 const itemsToShow = ref(4)
- 
 
 // Dados dos produtos
 const products = ref([
@@ -20,29 +19,22 @@ const products = ref([
 // Propriedades computadas
 const maxIndex = computed(() => products.value.length - itemsToShow.value)
 
-const visibleProducts = computed(() => {
-  const start = currentIndex.value
-  const end = start + itemsToShow.value
-  return products.value.slice(start, end)
-})
-
- 
-
 // Métodos
 const nextSlide = () => {
-  currentIndex.value = currentIndex.value >= maxIndex.value ? 0 : currentIndex.value + 1
+  if (currentIndex.value >= maxIndex.value) {
+    currentIndex.value = 0
+  } else {
+    currentIndex.value++
+  }
 }
 
 const prevSlide = () => {
-  currentIndex.value = currentIndex.value <= 0 ? maxIndex.value : currentIndex.value - 1
+  if (currentIndex.value <= 0) {
+    currentIndex.value = maxIndex.value
+  } else {
+    currentIndex.value--
+  }
 }
-
- 
-
-const isSpecialProduct = (productName) => {
-  return productName === 'Polos'
-}
-
 </script>
 
 <template>
@@ -57,7 +49,7 @@ const isSpecialProduct = (productName) => {
 
   <!-- Carrossel de Produtos -->
   <div class="flex justify-center items-center px-8 mb-8">
-    <div class="relative w-full max-w-4xl" @mouseenter="stopAutoPlay" @mouseleave="startAutoPlay">
+    <div class="relative w-full max-w-5xl">
       <!-- Botão Anterior -->
       <button 
         @click="prevSlide"
@@ -70,41 +62,30 @@ const isSpecialProduct = (productName) => {
       </button>
 
       <!-- Container do Carrossel -->
-      <div class="overflow-hidden bg-white rounded-2xl ">
-        <transition-group 
-          name="carousel" 
-          tag="div" 
-          class="flex items-center justify-between space-x-8"
+      <div class="overflow-hidden bg-white rounded-2xl py-6">
+        <div 
+          class="flex items-center px-8 space-x-8 transition-transform duration-700 ease-out"
+          :style="{ transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)` }"
         >
           <div 
-            v-for="product in visibleProducts" 
+            v-for="product in products" 
             :key="product.id"
-            class="flex flex-col items-center space-y-4 flex-1 transition-all duration-300"
+            class="flex flex-col items-center space-y-4 flex-shrink-0"
+            :style="{ width: `${100 / itemsToShow}%` }"
           >
             <!-- Círculo com a imagem -->
             <div class="relative group cursor-pointer">
-              <div 
-                :class="[
-                  'w-58 h-58 rounded-full border-3 overflow-hidden shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105',
-                  isSpecialProduct(product.name) ? 'border-blue-500' : 'border-gray-200'
-                ]"
-              >
+              <div class="w-60 h-60 rounded-full border border-gray-300 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 transform">
                 <img 
                   :src="product.image" 
                   :alt="product.name" 
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-cover transition-transform duration-300"
                   loading="lazy"
                 >
               </div>
-              <div class="absolute rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
             </div>
-            <span class="text-sm font-medium text-gray-700 text-center">{{ product.name }}</span>
+            <span class="text-sm font-semibold text-gray-800 text-center">{{ product.name }}</span>
           </div>
-        </transition-group>
-
-        <!-- Indicadores -->
-        <div class="flex justify-center mt-6 space-x-2">
-           
         </div>
       </div>
 
@@ -139,25 +120,5 @@ const isSpecialProduct = (productName) => {
   font-size: 2rem;
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-}
-
-.carousel-container {
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Animações para transições do carrossel */
-.carousel-enter-active,
-.carousel-leave-active {
-  transition: all 0.3s ease-in-out;
-}
-
-.carousel-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.carousel-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
 }
 </style>
