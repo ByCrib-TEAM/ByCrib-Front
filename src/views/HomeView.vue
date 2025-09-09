@@ -17,11 +17,15 @@ const products = ref([
 ])
 
 // Propriedades computadas
-const maxIndex = computed(() => products.value.length - itemsToShow.value)
+const visibleProducts = computed(() => {
+  const start = currentIndex.value
+  const end = start + itemsToShow.value
+  return products.value.slice(start, end)
+})
 
 // Métodos
 const nextSlide = () => {
-  if (currentIndex.value >= maxIndex.value) {
+  if (currentIndex.value >= products.value.length - itemsToShow.value) {
     currentIndex.value = 0
   } else {
     currentIndex.value++
@@ -30,7 +34,7 @@ const nextSlide = () => {
 
 const prevSlide = () => {
   if (currentIndex.value <= 0) {
-    currentIndex.value = maxIndex.value
+    currentIndex.value = products.value.length - itemsToShow.value
   } else {
     currentIndex.value--
   }
@@ -63,15 +67,14 @@ const prevSlide = () => {
 
       <!-- Container do Carrossel -->
       <div class="overflow-hidden bg-white rounded-2xl py-6">
-        <div 
-          class="flex items-center px-8 space-x-8 transition-transform duration-700 ease-out"
-          :style="{ transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)` }"
+        <div class="flex items-center justify-between px-8 space-x-8 transition-transform duration-700 ease-out" 
         >
+       
           <div 
-            v-for="product in products" 
+            v-for="product in visibleProducts" 
             :key="product.id"
-            class="flex flex-col items-center space-y-4 flex-shrink-0"
-            :style="{ width: `${100 / itemsToShow}%` }"
+            class="flex flex-col items-center space-y-4 flex-1 min-w-0"
+            
           >
             <!-- Círculo com a imagem -->
             <div class="relative group cursor-pointer">
