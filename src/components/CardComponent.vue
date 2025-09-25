@@ -1,32 +1,33 @@
 <script setup>
-import { defineProps } from 'vue';
-import { RouterLink } from 'vue-router';
+import { defineProps } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   product: {
     type: Object,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 </script>
 
 <template>
   <div class="component-card flex flex-col w-72 justify-center">
-    <!-- Link para página de detalhes --->
-    <RouterLink :to="`/product/${props.product.id}`" class="flex flex-col justify-baseline items-baseline">
+    <RouterLink :to="`/produto/${props.product.id}`" class="flex flex-col justify-baseline items-baseline">
       <!-- Imagem -->
       <div class="img-content flex justify-center items-center">
-        <img :src="currentImage" class="w-72" @mouseover="showVariantImage" @mouseout="resetImage" />
+        <img :src="props.product.imagem.url" alt="Imagem do produto" class="w-72 object-cover" />
       </div>
 
       <!-- Nome e Preço -->
-      <div class="flex flex-col gap-1">
-        <h1 class="font-semibold text-lg">{{ props.product.nome }}</h1>
+      <div class="flex flex-col gap-1 mt-2">
+        <h1 class="font-semibold text-lg truncate">{{ props.product.nome }}</h1>
+
         <h2 class="text-gray-800">
-          R${{ Number(props.product.preco).toFixed(2).replace(".", ",") }}
+          R${{ Number(props.product.preco).toFixed(2).replace('.', ',') }}
         </h2>
-        <span class="text-xs text-gray-600">
-          2x de R${{ (props.product.preco / 2).toFixed(2).replace(".", ",") }}
+
+        <span class="text-xs text-green-700">
+          Pix: R${{ (Number(props.product.preco) * 0.95).toFixed(2).replace('.', ',') }}
         </span>
       </div>
     </RouterLink>
@@ -39,23 +40,11 @@ const props = defineProps({
   height: 400px;
   max-height: 400px;
   min-height: 400px;
-  transition: 0.5s all ease;
+  transition: 0.3s all ease;
 }
 
 .component-card:hover {
   transform: scale(1.05);
-  transition: 0.5s;
-  cursor: pointer;
-}
-
-img {
-  height: auto;
-  transition: 0.5s all ease;
-}
-
-img:hover {
-  transform: scale(1.03);
-  transition: 0.5s;
   cursor: pointer;
 }
 
