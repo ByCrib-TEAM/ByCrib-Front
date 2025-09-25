@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 // Estado reativo
 const isLoading = ref(false)
@@ -8,6 +9,7 @@ const emailError = ref(false)
 const passwordWarning = ref(false)
 const passwordError = ref(false)
 const confirmPasswordError = ref(false)
+const router = useRouter()
 
 const form = reactive({
     name: '',
@@ -54,7 +56,7 @@ const isFormValid = computed(() => {
         !confirmPasswordError.value
 })
 
-// Função de cadastro
+// Função de cadastro atualizada com redirecionamento
 const handleSignup = async () => {
     if (isLoading.value || !isFormValid.value) return
 
@@ -86,7 +88,7 @@ const handleSignup = async () => {
         // Simular delay da API
         await new Promise(resolve => setTimeout(resolve, 1500))
 
-        alert('Cadastro realizado com sucesso!')
+       
 
         // Limpar formulário após sucesso
         form.name = ''
@@ -94,8 +96,8 @@ const handleSignup = async () => {
         form.password = ''
         form.confirmPassword = ''
 
-        // Aqui você pode usar Vue Router para navegação
-        // router.push('/login')
+        // Redirecionar para a página inicial após cadastro bem-sucedido
+        await router.push('/')
 
     } catch (error) {
         console.error('Erro no cadastro:', error)
@@ -108,11 +110,10 @@ const handleSignup = async () => {
 // Função para ir ao login
 const handleLogin = () => {
     console.log('Fazer login clicado')
-    alert('Navegar para página de login')
-    // Aqui você pode usar Vue Router
-    // router.push('/login')
+    router.push('/LoginPage') 
 }
 </script>
+
 <template>
     <div class="signup-container">
         <div class="breadcrumb">
@@ -161,7 +162,6 @@ const handleLogin = () => {
         </div>
     </div>
 </template>
-
 
 <style scoped>
 * {
