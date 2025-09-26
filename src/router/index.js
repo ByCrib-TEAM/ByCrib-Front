@@ -33,7 +33,7 @@ const router = createRouter({
       name: 'produto',
       component: ProductDetail,
       props: true,
-   },
+    },
   ],
 })
 

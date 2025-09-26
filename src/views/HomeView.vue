@@ -6,14 +6,24 @@
   const produtos = ref([])
 
   // Puxa dados do backend
-  onMounted(async () => {
-    try {
-      const response = await api.get('produtos/')
-      produtos.value = response.data.results
-    } catch (err) {
-      console.error('Erro ao buscar produtos:', err)
-    }
-  })
+ onMounted(async () => {
+  try {
+    const response = await api.get('produtos/')
+    console.log('PRODUTOS:', response.data.results)
+    produtos.value = response.data.results
+  } catch (err) {
+    console.error('Erro ao buscar produtos:', err)
+  }
+})
+
+  const produtoss = ref([
+  { 
+    id: 1, 
+    nome: 'Produto Teste', 
+    preco: 99.9, 
+    imagem: { url: 'https://via.placeholder.com/300' } 
+  }
+])
 
   // Estado do carrossel
   const currentIndex = ref(0)
@@ -53,7 +63,7 @@
       currentIndex.value--
     }
   }
-  </script>
+</script>
 
   <template>
     <div class="imagehome">
@@ -69,11 +79,9 @@
     <div class="flex justify-center items-center px-8 mb-8">
       <div class="relative w-full max-w-5xl">
         <!-- Botão Anterior -->
-        <button 
-          @click="prevSlide"
+        <button @click="prevSlide"
           class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
-          aria-label="Produto anterior"
-        >
+          aria-label="Produto anterior">
           <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
@@ -81,24 +89,16 @@
 
         <!-- Container do Carrossel -->
         <div class="overflow-hidden bg-white rounded-2xl py-6">
-          <div class="flex items-center justify-between px-8 space-x-8 transition-transform duration-700 ease-out" 
-          >
-        
-            <div 
-              v-for="product in visibleProducts" 
-              :key="product.id"
-              class="flex flex-col items-center space-y-4 flex-1 min-w-0"
-              
-            >
+          <div class="flex items-center justify-between px-8 space-x-8 transition-transform duration-700 ease-out">
+
+            <div v-for="product in visibleProducts" :key="product.id"
+              class="flex flex-col items-center space-y-4 flex-1 min-w-0">
               <!-- Círculo com a imagem -->
               <div class="relative group cursor-pointer">
-                <div class="w-60 h-60 rounded-full border border-gray-300 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 transform">
-                  <img 
-                    :src="product.image" 
-                    :alt="product.name" 
-                    class="w-full h-full object-cover transition-transform duration-300"
-                    loading="lazy"
-                  >
+                <div
+                  class="w-60 h-60 rounded-full border border-gray-300 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 transform">
+                  <img :src="product.image" :alt="product.name"
+                    class="w-full h-full object-cover transition-transform duration-300" loading="lazy">
                 </div>
               </div>
               <span class="text-sm font-semibold text-gray-800 text-center">{{ product.name }}</span>
@@ -107,43 +107,38 @@
         </div>
 
         <!-- Botão Próximo -->
-        <button 
-          @click="nextSlide"
+        <button @click="nextSlide"
           class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
-          aria-label="Próximo produto"
-        >
+          aria-label="Próximo produto">
           <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
         </button>
       </div>
     </div>
-      <!-- Produtos do backend -->
+
+    <!-- Card -->
     <div class="flex flex-wrap gap-6 justify-center mb-12">
-      <CardComponent
-        v-for="produto in produtos"
-        :key="produto.id"
-        :product="produto"
-      />
+      <CardComponent v-for="produto in produtoss" :key="produto.id" :product="produto" />
     </div>
   </template>
 
-  <style scoped>
-  .imagehome {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+<style scoped>
+.imagehome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .imagehome img {
-    width: 100%;
-    height: auto;
-  }
+.imagehome img {
+  width: 100%;
+  height: auto;
+}
 
-  .imagehome h1 {
-    color: black;
-    font-size: 2rem;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  }
-  </style>
+.imagehome h1 {
+  color: black;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="product-component flex justify-center items-center mt-50">
+  <div class="product-component flex justify-center items-center">
     <div class="product-page flex-wrap">
       <div class="product-image">
         <img class="img-product" :src="currentImage" :alt="product?.nome" />
@@ -129,7 +129,6 @@ const addToCart = () => {
 </script>
 
 <style scoped>
-/* Mantive exatamente o CSS original do seu template */
 .product-page {
   display: flex;
   justify-content: center;
