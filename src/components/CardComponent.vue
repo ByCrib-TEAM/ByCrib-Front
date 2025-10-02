@@ -1,68 +1,45 @@
-<script setup>
-import { defineProps } from 'vue';
-import { RouterLink } from 'vue-router';
-
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true,
-  },
-});
-</script>
-
 <template>
-  <div class="component-card flex flex-col w-72 justify-center">
-    <!-- Link para página de detalhes --->
-    <RouterLink :to="`/product/${props.product.id}`" class="flex flex-col justify-baseline items-baseline">
-      <!-- Imagem -->
-      <div class="img-content flex justify-center items-center">
-        <img :src="currentImage" class="w-72" @mouseover="showVariantImage" @mouseout="resetImage" />
+  <div class="p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div
+        v-for="produto in produtos"
+        :key="produto.id"
+        class="bg-white shadow-md rounded-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      >
+        <img
+          :src="produto.imagem_url"
+          :alt="produto.nome"
+          class="w-full h-64 object-contain mb-4 mx-auto"
+          loading="lazy"
+        />
+        <h2 class="text-base font-semibold mb-2 text-gray-800">{{ produto.nome }}</h2>
+        <p class="text-lg font-bold text-gray-900">R$ {{ formatPreco(produto.preco) }}</p>
+        <p class="text-sm text-gray-500 mt-1">4x de R$ {{ parcelamento(produto.preco) }} sem juros!</p>
       </div>
-
-      <!-- Nome e Preço -->
-      <div class="flex flex-col gap-1">
-        <h1 class="font-semibold text-lg">{{ props.product.nome }}</h1>
-        <h2 class="text-gray-800">
-          R${{ Number(props.product.preco).toFixed(2).replace(".", ",") }}
-        </h2>
-        <span class="text-xs text-gray-600">
-          2x de R${{ (props.product.preco / 2).toFixed(2).replace(".", ",") }}
-        </span>
-      </div>
-    </RouterLink>
+    </div>
   </div>
 </template>
 
+<script setup>
+defineProps({
+  produtos: {
+    type: Array,
+    required: true
+  }
+})
+
+function formatPreco(preco) {
+  // Se for string, converte para float
+  const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
+  return valor.toFixed(2).replace('.', ',');
+}
+
+function parcelamento(preco) {
+  const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
+  return (valor / 4).toFixed(2).replace('.', ',');
+}
+</script>
+
 <style scoped>
-.component-card,
-.component-card a {
-  height: 400px;
-  max-height: 400px;
-  min-height: 400px;
-  transition: 0.5s all ease;
-}
-
-.component-card:hover {
-  transform: scale(1.05);
-  transition: 0.5s;
-  cursor: pointer;
-}
-
-img {
-  height: auto;
-  transition: 0.5s all ease;
-}
-
-img:hover {
-  transform: scale(1.03);
-  transition: 0.5s;
-  cursor: pointer;
-}
-
-.img-content {
-  height: 300px;
-  max-height: 300px;
-  min-height: 300px;
-  overflow: hidden;
-}
+/* Se quiser ajustar ainda mais, pode adicionar aqui */
 </style>

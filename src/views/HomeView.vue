@@ -1,6 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getAllProducts } from '../services/produtos' // ajuste o caminho conforme seu projeto
+import CardComponent from '../components/CardComponent.vue'
 
+const produtos = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getAllProducts()
+    produtos.value = response.results // pega só o array dentro do objeto retornado
+  } catch (error) {
+    console.error('Erro ao carregar produtos:', error)
+  }
+})
 // Estado reativo
 const currentIndex = ref(0)
 const itemsToShow = ref(4)
@@ -39,6 +51,7 @@ const prevSlide = () => {
     currentIndex.value--
   }
 }
+console.log(produtos.value)
 </script>
 
 <template>
@@ -103,6 +116,14 @@ const prevSlide = () => {
         </svg>
       </button>
     </div>
+    
+
+  </div>
+  <div>
+    <h1 class="text-4xl font-bold text-center mb-8">
+      MAIS VENDIDOS
+    </h1>
+    <CardComponent :produtos="produtos" />
   </div>
 </template>
 
