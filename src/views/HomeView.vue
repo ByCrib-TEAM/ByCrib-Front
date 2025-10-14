@@ -104,6 +104,15 @@ const prevSlide = () => {
       </button>
     </div>
   </div>
+  <div class="flex justify-center items-center gap-14 mb-8 px-8">
+  <div>
+  <img src="../images/Nike.png" alt="">
+  </div>
+  <div class="flex flex-col gap-14">
+  <img src="../images/Supreme.png" alt="">
+  <img src="../images/Frame 39.png" alt="">
+  </div>
+  </div>
 </template>
 
 <style scoped>
