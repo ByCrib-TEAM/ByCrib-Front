@@ -33,7 +33,7 @@ function handleScroll() {
 
 // Verifica se está na página inicial
 const isHomePage = computed(() => {
-  return route.path === '/'
+  return route.path === '/' || route.path === '/LoginPage'
 })
 
 // Header fica transparente APENAS na home E quando scroll está no topo

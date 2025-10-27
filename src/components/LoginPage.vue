@@ -123,10 +123,12 @@ body {
 }
 
 .login-container {
+  margin-top: -64px;
   min-height: 100vh;
   background-image: url('../images/loginBackground.png');
   background-size: cover;
   background-repeat: no-repeat;
+  background-position-x: center;
   padding: 2rem;
   display: flex;
   align-items: center;
