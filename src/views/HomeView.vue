@@ -132,6 +132,7 @@ console.log(produtos.value)
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -64px;
 }
 
 .imagehome img {

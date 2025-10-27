@@ -53,8 +53,8 @@ onUnmounted(() => {
 
 <template>
   <header 
-    :class="{ 'bg-transparent ': isTransparent, 'bg-black': !isTransparent }" 
-    class="shadow-md relative h-16 sticky top-0 z-30 transition-colors duration-300"
+    :class="{ 'bg-transparent ': isTransparent, 'bg-black shadow-md': !isTransparent }" 
+    class=" relative h-16 sticky top-0 z-30 transition-colors duration-300"
   >
     <!-- SideMenu -->
     <SideMenu :open="showMenu" @close="closeMenu" />
