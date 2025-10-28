@@ -1,9 +1,48 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getAllProducts } from '../services/produtos'
+import CardComponent from '../components/CardComponent.vue'
 
-// Estado reativo
+const produtos = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getAllProducts()
+    produtos.value = response.results
+  } catch (error) {
+    console.error('Erro ao carregar produtos:', error)
+  }
+})
+
+// Estado reativo do carrossel
 const currentIndex = ref(0)
-const itemsToShow = ref(4)
+const itemsToShow = ref(4) // Responsivo
+const isTransitioning = ref(true)
+
+// Atualiza itemsToShow baseado no tamanho da tela
+const updateItemsToShow = () => {
+  const width = window.innerWidth
+  if (width < 640) {
+    itemsToShow.value = 1
+  } else if (width < 768) {
+    itemsToShow.value = 2
+  } else if (width < 1024) {
+    itemsToShow.value = 3
+  } else {
+    itemsToShow.value = 4
+  }
+}
+
+onMounted(() => {
+  updateItemsToShow()
+  window.addEventListener('resize', updateItemsToShow)
+})
+
+// Cleanup
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  window.removeEventListener('resize', updateItemsToShow)
+})
 
 // Dados dos produtos
 const products = ref([
@@ -16,29 +55,58 @@ const products = ref([
   { id: 7, name: 'Bonés', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=200&h=200&fit=crop&crop=center' }
 ])
 
-// Propriedades computadas
-const visibleProducts = computed(() => {
-  const start = currentIndex.value
-  const end = start + itemsToShow.value
-  return products.value.slice(start, end)
+// Cria um array infinito duplicando os produtos várias vezes
+const infiniteProducts = computed(() => {
+  const repeats = 10 // Repete os produtos 10 vezes
+  return Array(repeats).fill(products.value).flat()
 })
 
-// Métodos
+// Inicia no meio do array para permitir navegação nos dois sentidos
+onMounted(() => {
+  currentIndex.value = products.value.length * 5 // Começa no meio
+  updateItemsToShow()
+  window.addEventListener('resize', updateItemsToShow)
+})
+
+// Próximo slide
 const nextSlide = () => {
-  if (currentIndex.value >= products.value.length - itemsToShow.value) {
-    currentIndex.value = 0
-  } else {
-    currentIndex.value++
-  }
+  currentIndex.value++
+  
+  // Quando chegar perto do final, reseta para o meio sem animação
+  setTimeout(() => {
+    if (currentIndex.value >= products.value.length * 8) {
+      isTransitioning.value = false
+      currentIndex.value = products.value.length * 5
+      setTimeout(() => {
+        isTransitioning.value = true
+      }, 50)
+    }
+  }, 500)
 }
 
+// Slide anterior
 const prevSlide = () => {
-  if (currentIndex.value <= 0) {
-    currentIndex.value = products.value.length - itemsToShow.value
-  } else {
-    currentIndex.value--
-  }
+  currentIndex.value--
+  
+  // Quando chegar perto do início, reseta para o meio sem animação
+  setTimeout(() => {
+    if (currentIndex.value <= products.value.length * 2) {
+      isTransitioning.value = false
+      currentIndex.value = products.value.length * 5
+      setTimeout(() => {
+        isTransitioning.value = true
+      }, 50)
+    }
+  }, 500)
 }
+
+// Calcula o deslocamento
+const translateX = computed(() => {
+  const itemWidth = 100 / itemsToShow.value
+  return -(currentIndex.value * itemWidth)
+})
+
+console.log(produtos.value)
 </script>
 
 <template>
@@ -51,13 +119,13 @@ const prevSlide = () => {
     <h1>POR CATEGORIA</h1>
   </div>
 
-  <!-- Carrossel de Produtos -->
+  <!-- Carrossel Infinito -->
   <div class="flex justify-center items-center px-8 mb-8">
     <div class="relative w-full max-w-5xl">
       <!-- Botão Anterior -->
       <button 
         @click="prevSlide"
-        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
+        class="absolute -left-6 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
         aria-label="Produto anterior"
       >
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,14 +135,18 @@ const prevSlide = () => {
 
       <!-- Container do Carrossel -->
       <div class="overflow-hidden bg-white rounded-2xl py-6">
-        <div class="flex items-center justify-between px-8 space-x-8 transition-transform duration-700 ease-out" 
+        <div 
+          class="flex items-center"
+          :style="{
+            transform: `translateX(${translateX}%)`,
+            transition: isTransitioning ? 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
+          }"
         >
-       
           <div 
-            v-for="product in visibleProducts" 
-            :key="product.id"
-            class="flex flex-col items-center space-y-4 flex-1 min-w-0"
-            
+            v-for="(product, index) in infiniteProducts" 
+            :key="`${product.id}-${index}`"
+            class="flex flex-col items-center space-y-4 flex-shrink-0 px-4"
+            :style="{ width: `${100 / itemsToShow}%` }"
           >
             <!-- Círculo com a imagem -->
             <div class="relative group cursor-pointer">
@@ -95,7 +167,7 @@ const prevSlide = () => {
       <!-- Botão Próximo -->
       <button 
         @click="nextSlide"
-        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
+        class="absolute -right-6 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
         aria-label="Próximo produto"
       >
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,14 +176,23 @@ const prevSlide = () => {
       </button>
     </div>
   </div>
+
+  <!-- Seção de Marcas -->
   <div class="flex justify-center items-center gap-14 mb-8 px-8">
+    <div>
+      <img src="../images/Nike.png" alt="">
+    </div>
+    <div class="flex flex-col gap-14">
+      <img src="../images/Supreme.png" alt="">
+      <img src="../images/Frame 39.png" alt="">
+    </div>
+  </div>
+
   <div>
-  <img src="../images/Nike.png" alt="">
-  </div>
-  <div class="flex flex-col gap-14">
-  <img src="../images/Supreme.png" alt="">
-  <img src="../images/Frame 39.png" alt="">
-  </div>
+    <h1 class="text-4xl font-bold text-center mb-8">
+      MAIS VENDIDOS
+    </h1>
+    <CardComponent :produtos="produtos" />
   </div>
 </template>
 
