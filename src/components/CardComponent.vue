@@ -4,6 +4,7 @@
       <div
         v-for="produto in produtos"
         :key="produto.id"
+        @click="goToProductDetail(produto)"
         class="bg-white shadow-md rounded-lg p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
       >
         <img
@@ -21,6 +22,10 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 defineProps({
   produtos: {
     type: Array,
@@ -29,7 +34,6 @@ defineProps({
 })
 
 function formatPreco(preco) {
-  // Se for string, converte para float
   const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
   return valor.toFixed(2).replace('.', ',');
 }
@@ -38,8 +42,15 @@ function parcelamento(preco) {
   const valor = typeof preco === 'string' ? parseFloat(preco) : preco;
   return (valor / 4).toFixed(2).replace('.', ',');
 }
-</script>
 
-<style scoped>
-/* Se quiser ajustar ainda mais, pode adicionar aqui */
-</style>
+function goToProductDetail(produto) {
+  
+  // Armazena no sessionStorage
+  sessionStorage.setItem('produto-selecionado', JSON.stringify(produto))
+  
+  // Navega para a página
+  router.push(`/produto/${produto.id}`)
+
+  scrollY = 0
+}
+</script>
