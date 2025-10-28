@@ -1,11 +1,13 @@
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue'
+
 const props = defineProps({ open: Boolean })
 const emit = defineEmits(['close'])
 const produtosOpen = ref(false)
 function close() {
   emit('close')
 }
+
 </script>
 
 <template>
@@ -27,7 +29,9 @@ function close() {
         <nav class="mt-8">
           <ul class="flex flex-col gap-6 pl-8">
             <li>
-              <a href="#" class="text-white text-xl font-light">Início</a>
+              <router-link to="/" class="text-white text-xl font-light hover:text-gray-300 transition-colors">
+                Início
+              </router-link>
             </li>
             <li>
               <button
@@ -75,7 +79,7 @@ function close() {
           </ul>
         </nav>
       </div>
-      <div class="border-t border-gray-700 px-6 py-6 flex items-center gap-3">
+      <router-link to="/RegisterPage" class="border-t border-gray-700 px-6 py-6 flex items-center gap-3 hover:bg-gray-800 transition-colors cursor-pointer">
         <span class="bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center">
           <svg fill="white" width="20" height="20" viewBox="0 0 24 24">
             <circle cx="12" cy="8" r="4"/>
@@ -83,7 +87,7 @@ function close() {
           </svg>
         </span>
         <span class="text-white text-lg font-light">Cadastro/Login</span>
-      </div>
+      </router-link>
     </aside>
   </transition>
   <!-- overlay escuro -->

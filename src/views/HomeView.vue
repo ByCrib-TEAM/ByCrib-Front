@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { getAllProducts } from '../services/produtos'
+import { getAllProducts } from '../services/produtos' // ajuste o caminho conforme seu projeto
 import CardComponent from '../components/CardComponent.vue'
 
 const produtos = ref([])
@@ -8,13 +8,12 @@ const produtos = ref([])
 onMounted(async () => {
   try {
     const response = await getAllProducts()
-    produtos.value = response.results
+    produtos.value = response.results // pega só o array dentro do objeto retornado
   } catch (error) {
     console.error('Erro ao carregar produtos:', error)
   }
 })
-
-// Estado reativo do carrossel
+// Estado reativo
 const currentIndex = ref(0)
 const itemsToShow = ref(4) // Responsivo
 const isTransitioning = ref(true)
@@ -175,6 +174,14 @@ console.log(produtos.value)
         </svg>
       </button>
     </div>
+    
+
+  </div>
+  <div>
+    <h1 class="text-4xl font-bold text-center mb-8">
+      MAIS VENDIDOS
+    </h1>
+    <CardComponent :produtos="produtos" />
   </div>
 
   <!-- Seção de Marcas -->
@@ -201,6 +208,7 @@ console.log(produtos.value)
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -64px;
 }
 
 .imagehome img {

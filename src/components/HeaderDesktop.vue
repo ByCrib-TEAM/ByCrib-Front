@@ -1,11 +1,13 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import SideMenu from './SideMenu.vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
 const showMenu = ref(false)
+const scrollY = ref(0)
+const route = useRoute()
 
 function closeSearch() {
   showSearch.value = false
@@ -23,10 +25,37 @@ watch(showSearch, async (val) => {
     searchInput.value?.focus()
   }
 })
+
+// Função para atualizar a posição do scroll
+function handleScroll() {
+  scrollY.value = window.scrollY
+}
+
+// Verifica se está na página inicial
+const isHomePage = computed(() => {
+  return route.path === '/' || route.path === '/LoginPage'
+})
+
+// Header fica transparente APENAS na home E quando scroll está no topo
+const isTransparent = computed(() => {
+  return isHomePage.value && scrollY.value === 0
+})
+
+// Adiciona/remove o listener de scroll
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
-  <header class="bg-black shadow-md relative h-16 sticky top-0 z-30">
+  <header 
+    :class="{ 'bg-transparent ': isTransparent, 'bg-black shadow-md': !isTransparent }" 
+    class=" relative h-16 sticky top-0 z-30 transition-colors duration-300"
+  >
     <!-- SideMenu -->
     <SideMenu :open="showMenu" @close="closeMenu" />
 
@@ -43,7 +72,7 @@ watch(showSearch, async (val) => {
             <input
               type="text"
               placeholder=""
-              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white"
+              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white bg-transparent"
             />
             <img
               src="/src/images/Search.png"
@@ -115,8 +144,6 @@ watch(showSearch, async (val) => {
     </transition>
   </header>
 </template>
-
-
 
 <style scoped>
 .fade-enter-active,
