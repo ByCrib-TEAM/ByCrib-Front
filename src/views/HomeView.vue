@@ -70,7 +70,7 @@ onMounted(() => {
 // Próximo slide
 const nextSlide = () => {
   currentIndex.value++
-
+  
   // Quando chegar perto do final, reseta para o meio sem animação
   setTimeout(() => {
     if (currentIndex.value >= products.value.length * 8) {
@@ -86,7 +86,7 @@ const nextSlide = () => {
 // Slide anterior
 const prevSlide = () => {
   currentIndex.value--
-
+  
   // Quando chegar perto do início, reseta para o meio sem animação
   setTimeout(() => {
     if (currentIndex.value <= products.value.length * 2) {
@@ -122,9 +122,11 @@ console.log(produtos.value)
   <div class="flex justify-center items-center px-8 mb-8">
     <div class="relative w-full max-w-5xl">
       <!-- Botão Anterior -->
-      <button @click="prevSlide"
+      <button 
+        @click="prevSlide"
         class="absolute -left-6 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
-        aria-label="Produto anterior">
+        aria-label="Produto anterior"
+      >
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
@@ -132,18 +134,28 @@ console.log(produtos.value)
 
       <!-- Container do Carrossel -->
       <div class="overflow-hidden bg-white rounded-2xl py-6">
-        <div class="flex items-center" :style="{
-          transform: `translateX(${translateX}%)`,
-          transition: isTransitioning ? 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
-        }">
-          <div v-for="(product, index) in infiniteProducts" :key="`${product.id}-${index}`"
-            class="flex flex-col items-center space-y-4 flex-shrink-0 px-4" :style="{ width: `${100 / itemsToShow}%` }">
+        <div 
+          class="flex items-center"
+          :style="{
+            transform: `translateX(${translateX}%)`,
+            transition: isTransitioning ? 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
+          }"
+        >
+          <div 
+            v-for="(product, index) in infiniteProducts" 
+            :key="`${product.id}-${index}`"
+            class="flex flex-col items-center space-y-4 flex-shrink-0 px-4"
+            :style="{ width: `${100 / itemsToShow}%` }"
+          >
             <!-- Círculo com a imagem -->
             <div class="relative group cursor-pointer">
-              <div
-                class="w-60 h-60 rounded-full border border-gray-300 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 transform">
-                <img :src="product.image" :alt="product.name"
-                  class="w-full h-full object-cover transition-transform duration-300" loading="lazy">
+              <div class="w-60 h-60 rounded-full border border-gray-300 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105 transform">
+                <img 
+                  :src="product.image" 
+                  :alt="product.name" 
+                  class="w-full h-full object-cover transition-transform duration-300"
+                  loading="lazy"
+                >
               </div>
             </div>
             <span class="text-sm font-semibold text-gray-800 text-center">{{ product.name }}</span>
@@ -152,18 +164,25 @@ console.log(produtos.value)
       </div>
 
       <!-- Botão Próximo -->
-      <button @click="nextSlide"
+      <button 
+        @click="nextSlide"
         class="absolute -right-6 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-gray-200"
-        aria-label="Próximo produto">
+        aria-label="Próximo produto"
+      >
         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
       </button>
     </div>
-
+    
 
   </div>
-
+  <div>
+    <h1 class="text-4xl font-bold text-center mb-8">
+      MAIS VENDIDOS
+    </h1>
+    <CardComponent :produtos="produtos" />
+  </div>
 
   <!-- Seção de Marcas -->
   <div class="flex justify-center items-center gap-14 mb-8 px-8">
@@ -176,12 +195,7 @@ console.log(produtos.value)
     </div>
   </div>
 
-  <div>
-    <h1 class="text-4xl font-bold text-center mb-8">
-      MAIS VENDIDOS
-    </h1>
-    <CardComponent :produtos="produtos" />
-  </div>
+  
 </template>
 
 <style scoped>
