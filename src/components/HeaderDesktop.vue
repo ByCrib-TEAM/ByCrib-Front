@@ -1,11 +1,13 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted, onActivated } from 'vue'
 import SideMenu from './SideMenu.vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
 const showMenu = ref(false)
+const scrollY = ref(window.scrollY || 0)
+const route = useRoute()
 
 function closeSearch() {
   showSearch.value = false
@@ -23,27 +25,74 @@ watch(showSearch, async (val) => {
     searchInput.value?.focus()
   }
 })
+
+// Atualiza a posição do scroll
+function handleScroll() {
+  scrollY.value = window.scrollY
+}
+
+// Garante que o scroll resete ao mudar de rota
+watch(
+  () => route.path,
+  async (newPath) => {
+    await nextTick()
+    window.scrollTo(0, 0)
+    handleScroll()
+
+    // Reativa o listener de scroll ao voltar pra home ou login
+    if (newPath === '/' || newPath === '/LoginPage') {
+      window.removeEventListener('scroll', handleScroll)
+      window.addEventListener('scroll', handleScroll)
+      handleScroll()
+    }
+  }
+)
+
+const isHomePage = computed(() => {
+  return route.path === '/' || route.path === '/LoginPage'
+})
+
+// Header transparente apenas na home e no topo
+const isTransparent = computed(() => {
+  return isHomePage.value && scrollY.value <= 0
+})
+
+// Sempre ativa o listener ao montar
+onMounted(() => {
+  handleScroll()
+  window.addEventListener('scroll', handleScroll)
+})
+
+// Garante reativação se o componente for "reativado" (ex: via keep-alive)
+onActivated(() => {
+  window.addEventListener('scroll', handleScroll)
+  handleScroll()
+})
+
+// Remove listener ao desmontar
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
-  <header class="bg-black shadow-md relative h-16 sticky top-0 z-30">
-    <!-- SideMenu -->
+  <header 
+    :class="{ 'bg-transparent': isTransparent, 'bg-black shadow-md': !isTransparent }" 
+    class="relative h-16 sticky top-0 z-30 transition-colors duration-300"
+  >
     <SideMenu :open="showMenu" @close="closeMenu" />
 
     <div class="mx-auto px-12 relative z-10 h-full">
       <div class="flex items-center justify-between h-full">
-        <!-- menu + pesquisa -->
         <div class="flex items-center space-x-4">
           <button class="text-gray-900 dark:text-white cursor-pointer" @click="openMenu">
             <img src="/src/images/icons8-cardápio-50.png" alt="Menu icon" class="h-6 w-6" />
           </button>
 
-          <!-- input com lupa (aparece  em telas grandes) -->
           <div class="relative hidden lg:block">
             <input
               type="text"
-              placeholder=""
-              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white"
+              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white bg-transparent"
             />
             <img
               src="/src/images/Search.png"
@@ -52,26 +101,17 @@ watch(showSearch, async (val) => {
             />
           </div>
 
-          <!-- lupa visível em telas pequenas -->
           <button class="lg:hidden" @click="showSearch = true">
             <img src="/src/images/Search.png" alt="Search icon" class="w-5 h-5" />
           </button>
         </div>
 
-        <!-- logo -->
-        <div
-          class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        >
-        
-          <RouterLink to="/"><img
-            src="/src/images/cribLogo_no_background 1.png"
-            alt="Logo"
-            class="h-8"
-          />
+        <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <RouterLink to="/">
+            <img src="/src/images/cribLogo_no_background 1.png" alt="Logo" class="h-8" />
           </RouterLink>
         </div>
 
-        <!-- ícones -->
         <div class="flex space-x-8"> 
           <RouterLink to="/LoginPage">
             <img src="/src/images/User.png" alt="" class="h-6" />
@@ -83,14 +123,12 @@ watch(showSearch, async (val) => {
       </div>
     </div>
 
-    <!-- overlay que cobre toda a tela para detectar clique fora -->
     <transition name="fade">
       <div
         v-if="showSearch"
         class="fixed inset-0 z-20"
         @click="closeSearch"
       >
-        <!-- área preta só na altura do header -->
         <div
           class="bg-black flex items-center justify-center mx-auto"
           style="height: 64px; max-width: 100vw;"
@@ -103,7 +141,6 @@ watch(showSearch, async (val) => {
               placeholder="Pesquisar..."
               class="w-full text-white bg-black border border-white rounded-4xl px-4 py-2 pr-10 focus:outline-none"
             />
-            <!-- lupa dentro do input -->
             <img
               src="/src/images/Search.png"
               alt="Search icon"
@@ -115,8 +152,6 @@ watch(showSearch, async (val) => {
     </transition>
   </header>
 </template>
-
-
 
 <style scoped>
 .fade-enter-active,
