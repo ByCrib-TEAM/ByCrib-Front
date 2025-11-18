@@ -1,11 +1,13 @@
 <script setup>
 import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import SideMenu from './SideMenu.vue'
+import ShoppingCart from './ShoppingCart.vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
 const showMenu = ref(false)
+const showCart = ref(false)
 const scrollY = ref(0)
 const route = useRoute()
 
@@ -17,6 +19,12 @@ function openMenu() {
 }
 function closeMenu() {
   showMenu.value = false
+}
+function openCart() {
+  showCart.value = true
+}
+function closeCart() {
+  showCart.value = false
 }
 
 watch(showSearch, async (val) => {
@@ -58,6 +66,9 @@ onUnmounted(() => {
   >
     <!-- SideMenu -->
     <SideMenu :open="showMenu" @close="closeMenu" />
+
+    <!-- ShoppingCart -->
+    <ShoppingCart :open="showCart" @close="closeCart" />
 
     <div class="mx-auto px-12 relative z-10 h-full">
       <div class="flex items-center justify-between h-full">
@@ -105,9 +116,9 @@ onUnmounted(() => {
           <RouterLink to="/LoginPage">
             <img src="/src/images/User.png" alt="" class="h-6" />
           </RouterLink>
-          <RouterLink to="/">
-            <img src="/src/images/Shopaholic.png" alt="" class="h-6" />
-          </RouterLink>
+          <button @click="openCart" class="cursor-pointer">
+            <img src="/src/images/Shopaholic.png" alt="Carrinho" class="h-6" />
+          </button>
         </div>
       </div>
     </div>
