@@ -88,8 +88,6 @@ const handleSignup = async () => {
         // Simular delay da API
         await new Promise(resolve => setTimeout(resolve, 1500))
 
-       
-
         // Limpar formulário após sucesso
         form.name = ''
         form.email = ''
@@ -116,15 +114,15 @@ const handleLogin = () => {
 
 <template>
     <div class="signup-container">
-        <div class="breadcrumb">
-            <span>Início</span>
-            <span class="separator">></span>
-            <span>Minha Conta</span>
-            <span class="separator">></span>
-            <span class="current">Cadastro</span>
-        </div>
-
         <div class="signup-form">
+            <div class="breadcrumb">
+                <span>Início</span>
+                <span class="separator">></span>
+                <span>Minha Conta</span>
+                <span class="separator">></span>
+                <span class="current">Cadastro</span>
+            </div>
+
             <h1 class="title">CADASTRO</h1>
 
             <form @submit.prevent="handleSignup" autocomplete="off">
@@ -175,14 +173,21 @@ body {
 }
 
 .signup-container {
+    margin-top: -64px;
     min-height: 100vh;
-    background-color: white;
+    background-image: url('../images/loginBackground.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position-x: center;
     padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .breadcrumb {
     text-align: center;
-    color: #6c757d;
+    color: white;
     font-size: 0.9rem;
 }
 
@@ -191,22 +196,24 @@ body {
 }
 
 .current {
-    color: #000;
+    color: white;
     font-weight: 500;
 }
 
 .signup-form {
-    max-width: 400px;
+    width: 600px;
     margin: 0 auto;
-    background: white;
+    backdrop-filter: blur(16px);
     padding: 3rem 2rem;
+    border: 2px solid transparent;
+    border-radius: 20px;
 }
 
 .title {
     text-align: center;
     font-size: 2rem;
     font-weight: 600;
-    color: #000;
+    color: white;
     margin-bottom: 2rem;
     letter-spacing: 0.05em;
 }
@@ -217,10 +224,11 @@ body {
 }
 
 .input-field {
+    color: white;
     width: 100%;
     padding: 0.3rem 0.5rem;
-    border: 2px solid #000000;
-    border-radius: 50px;
+    border: 1px solid white;
+    border-radius: 15px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
     outline: none;
@@ -228,7 +236,7 @@ body {
 }
 
 .input-field:focus {
-    border-color: #000000;
+    border-color: gray;
 }
 
 .input-field.error {
@@ -240,13 +248,14 @@ body {
 }
 
 .input-field::placeholder {
-    color: #adb5bd;
+    color: white;
+    opacity: 0.7;
 }
 
 .signup-button {
     width: 100%;
-    background-color: #000;
-    color: white;
+    background-color: white;
+    color: black;
     border: none;
     border-radius: 50px;
     padding: 1rem 2rem;
@@ -259,7 +268,7 @@ body {
 }
 
 .signup-button:hover:not(:disabled) {
-    background-color: #333;
+    background-color: gray;
 }
 
 .signup-button:disabled {
@@ -270,18 +279,18 @@ body {
 .login-link {
     text-align: center;
     margin-top: 2rem;
-    color: #000000;
+    color: white;
     font-size: 0.9rem;
 }
 
 .login-text {
-    color: #000000;
+    color: white;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .login-text:hover {
-    color: #393939;
+    color: gray;
 }
 
 @media (max-width: 480px) {

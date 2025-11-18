@@ -49,8 +49,8 @@ function goToProductDetail(produto) {
   sessionStorage.setItem('produto-selecionado', JSON.stringify(produto))
   
   // Navega para a página
-  router.push(`/produto/${produto.id}`)
+  router.push({name: 'ProductDetail'})
 
-  scrollY = 0
+  // scrollY.value;/ = 0
 }
 </script>

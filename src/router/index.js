@@ -23,11 +23,21 @@ const router = createRouter({
       component: RegisterPage,
     },
     {
-    path: "/produto/:id",
-    name: "produto",
+    path: "/produtos",
+    name: "ProductDetail",
     component: ProductDetail,
+    // props: true,
   },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0 }
+  }
 })
+
+// router.beforeEach((to, from, next) => {
+//   // Fazer um scroll para o topo da página em cada navegação
+//   window.scrollTo(0, 0);
+//   next();
+// })
 
 export default router

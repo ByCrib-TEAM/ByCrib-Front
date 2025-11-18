@@ -5,7 +5,7 @@ import FooterPage from './components/FooterPage.vue';
 </script>
 
 <template>
-  <div id="app">
+  <!-- <div id="app"> -->
     <HeaderDesktop />
     
     
@@ -14,7 +14,7 @@ import FooterPage from './components/FooterPage.vue';
    
 
     <FooterPage />
-  </div>
+  <!-- </div> -->
 </template>
 
 

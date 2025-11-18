@@ -2,7 +2,7 @@
 import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import SideMenu from './SideMenu.vue'
 import ShoppingCart from './ShoppingCart.vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, RouterLink, useRoute } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
@@ -36,12 +36,14 @@ watch(showSearch, async (val) => {
 
 // Função para atualizar a posição do scroll
 function handleScroll() {
+  console.log('scrolling')
+  console.log(window.scrollY)
   scrollY.value = window.scrollY
 }
 
 // Verifica se está na página inicial
 const isHomePage = computed(() => {
-  return route.path === '/' || route.path === '/LoginPage'
+  return route.name == 'HomePage' || route.path === '/LoginPage'
 })
 
 // Header fica transparente APENAS na home E quando scroll está no topo
@@ -54,9 +56,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll)
 })
 
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+
 </script>
 
 <template>

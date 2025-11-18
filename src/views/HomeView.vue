@@ -12,6 +12,10 @@ onMounted(async () => {
   } catch (error) {
     console.error('Erro ao carregar produtos:', error)
   }
+  nextTick(() => {
+    window.scrollTo(0, savedScrollY);
+  });
+  
 })
 // Estado reativo
 const currentIndex = ref(0)
@@ -177,13 +181,6 @@ console.log(produtos.value)
     
 
   </div>
-  <div>
-    <h1 class="text-4xl font-bold text-center mb-8">
-      MAIS VENDIDOS
-    </h1>
-    <CardComponent :produtos="produtos" />
-  </div>
-
   <!-- Seção de Marcas -->
   <div class="flex justify-center items-center gap-14 mb-8 px-8">
     <div>
