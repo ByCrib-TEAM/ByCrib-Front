@@ -2,8 +2,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { getAllProducts } from '../services/produtos' // ajuste o caminho conforme seu projeto
 import CardComponent from '../components/CardComponent.vue'
+import { useRouter } from 'vue-router'
 
 const produtos = ref([])
+const router = useRouter()
 
 onMounted(async () => {
   try {
@@ -45,13 +47,13 @@ onUnmounted(() => {
 
 // Dados dos produtos
 const products = ref([
-  { id: 1, name: 'Bermudas', image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=200&h=200&fit=crop&crop=center' },
-  { id: 2, name: 'Calças', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=200&h=200&fit=crop&crop=center' },
-  { id: 3, name: 'Camisetas', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop&crop=center' },
-  { id: 4, name: 'Polos', image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=200&h=200&fit=crop&crop=center' },
-  { id: 5, name: 'Jaquetas', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&h=200&fit=crop&crop=center' },
-  { id: 6, name: 'Tênis', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop&crop=center' },
-  { id: 7, name: 'Bonés', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=200&h=200&fit=crop&crop=center' }
+  { id: 1, name: 'Bermudas', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759342032/oyld2ungtdlsv4k4ahpz.png', route: '/bermudas' },
+  { id: 2, name: 'Calças', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759416288/ojvz9ju5sfnokg70naqn.png' },
+  { id: 3, name: 'Camisetas', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759415388/o2wlyuubyd0wowqkuddn.png' },
+
+  { id: 4, name: 'Jaquetas', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759494064/pbqwtbpqtkfnr4gjvrsu.png' },
+  { id: 5, name: 'Tênis', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop&crop=center' },
+  { id: 6, name: 'Bonés', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=200&h=200&fit=crop&crop=center' }
 ])
 
 // Cria um array infinito duplicando os produtos várias vezes
@@ -146,6 +148,7 @@ console.log(produtos.value)
             :key="`${product.id}-${index}`"
             class="flex flex-col items-center space-y-4 flex-shrink-0 px-4"
             :style="{ width: `${100 / itemsToShow}%` }"
+            @click="router.push(product.route)"
           >
             <!-- Círculo com a imagem -->
             <div class="relative group cursor-pointer">
