@@ -192,12 +192,7 @@ console.log(produtos.value)
     </div>
   </div>
 
-  <div>
-    <h1 class="text-4xl font-bold text-center mb-8">
-      MAIS VENDIDOS
-    </h1>
-    <CardComponent :produtos="produtos" />
-  </div>
+  
 </template>
 
 <style scoped>
