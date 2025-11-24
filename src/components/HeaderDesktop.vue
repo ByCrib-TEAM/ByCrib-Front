@@ -2,7 +2,7 @@
 import { ref, watch, nextTick, computed, onMounted, onUnmounted, onActivated } from 'vue'
 import SideMenu from './SideMenu.vue'
 import ShoppingCart from './ShoppingCart.vue'
-import { onBeforeRouteUpdate, RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
