@@ -52,8 +52,8 @@ const products = ref([
   { id: 3, name: 'Camisetas', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759415388/o2wlyuubyd0wowqkuddn.png' },
 
   { id: 4, name: 'Jaquetas', image: 'http://res.cloudinary.com/dhb2ioxtt/image/upload/v1759494064/pbqwtbpqtkfnr4gjvrsu.png' },
-  { id: 5, name: 'Tênis', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop&crop=center' },
-  { id: 6, name: 'Bonés', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=200&h=200&fit=crop&crop=center' }
+  { id: 5, name: 'Tênis', image: 'https://res.cloudinary.com/doldutpvi/image/upload/v1764012232/tn1_b0vgia.png' },
+  { id: 6, name: 'Bonés', image: 'https://res.cloudinary.com/doldutpvi/image/upload/v1764012235/capclass_fdv2az.png' }
 ])
 
 // Cria um array infinito duplicando os produtos várias vezes
