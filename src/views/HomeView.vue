@@ -195,6 +195,7 @@ console.log(produtos.value)
     </div>
   </div>
 
+    
   
 </template>
 
