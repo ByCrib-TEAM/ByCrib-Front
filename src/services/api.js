@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE = axios.create({
   // baseURL: "https://bycrib-back-x7zl.onrender.com/api/",
-  baseURL: "http://191.52.57.4:19003/api",
+  baseURL: "http://191.52.55.196:19003/api",
 });
 
 export default API_BASE;
