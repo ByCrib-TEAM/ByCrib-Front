@@ -58,19 +58,29 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useProdutosStore } from '@/stores/produtos'
+import { useCarrinhoStore } from '@/stores/carrinho'
+
+const route = useRoute()
+const router = useRouter()
+const produtoStore = useProdutosStore()
+const carrinhoStore = useCarrinhoStore()
 
 const product = ref(null)
 const quantity = ref(1)
 const currentImageSrc = ref('')
+const isAdding = ref(false)
 
-// Computed prices
 const basePrice = computed(() => {
   const preco = product.value?.preco || 0
   return typeof preco === 'string' ? parseFloat(preco) : preco
 })
+
 const totalPrice = computed(() => basePrice.value * quantity.value)
 const discountedPrice = computed(() => totalPrice.value * 0.9)
+
 const currentImage = computed(() => {
   if (currentImageSrc.value) return currentImageSrc.value
   if (product.value?.imagens?.length > 0) return product.value.imagens[0].url
@@ -78,42 +88,38 @@ const currentImage = computed(() => {
   return ''
 })
 
-onMounted(() => {
-  // Recupera o produto do sessionStorage
-  const produtoSalvo = sessionStorage.getItem('produto-selecionado')
+const loadProduct = async (id) => {
+  if (!id) return;
   
-  console.log('Produto salvo:', produtoSalvo) // Debug
+  await produtoStore.carregarProdutoDetalhe(id)
   
-  if (produtoSalvo) {
-    const produtoData = JSON.parse(produtoSalvo)
-    product.value = produtoData
-    
-    console.log('Produto carregado:', produtoData) // Debug
-    
-    // Se o produto tem imagens array
-    if (produtoData.imagens?.length > 0) {
-      currentImageSrc.value = produtoData.imagens[0].url
-    } 
-    // Se o produto tem apenas imagem_url (formato do card)
-    else if (produtoData.imagem_url) {
-      // Cria um array de imagens com a imagem principal
-      product.value.imagens = [{ url: produtoData.imagem_url }]
-      currentImageSrc.value = produtoData.imagem_url
-    }
-    
-    // Limpa o sessionStorage após usar (opcional)
-    // sessionStorage.removeItem('produto-selecionado')
-  } else {
-    console.error('Nenhum produto encontrado no sessionStorage')
+  if (produtoStore.produtoAtual) {
+    product.value = produtoStore.produtoAtual
+    currentImageSrc.value = ''
+    quantity.value = 1
   }
+}
+
+onMounted(() => {
+  loadProduct(route.params.id)
 })
 
-// Quantidade
-const increment = () => quantity.value++
-const decrement = () => { if (quantity.value > 1) quantity.value-- }
+watch(() => route.params.id, (newId) => {
+  loadProduct(newId)
+})
 
-// Imagem hover
-const changeImage = newImage => { currentImageSrc.value = newImage }
+const increment = () => {
+  if (product.value && quantity.value < product.value.estoque) {
+    quantity.value++
+  }
+}
+
+const decrement = () => { 
+  if (quantity.value > 1) quantity.value-- 
+}
+
+const changeImage = (newImage) => { currentImageSrc.value = newImage }
+
 const resetZoom = () => { 
   if (product.value?.imagens?.length > 0) {
     currentImageSrc.value = product.value.imagens[0].url
@@ -122,17 +128,35 @@ const resetZoom = () => {
   }
 }
 
-// Carrinho
-const addToCart = () => {
-  if (product.value && product.value.estoque > 0) {
-    console.log('Produto adicionado ao carrinho:', {
-      id: product.value.id,
-      nome: product.value.nome,
-      preco: product.value.preco,
-      quantidade: quantity.value,
-      imagem: currentImage.value
-    })
-    alert('Produto adicionado ao carrinho! (Simulação)')
+const addToCart = async () => {
+  if (!product.value) return
+  if (product.value.estoque <= 0) {
+    alert('Produto esgotado!')
+    return
+  }
+  if (quantity.value > product.value.estoque) {
+    alert(`Apenas ${product.value.estoque} unidades disponíveis.`)
+    quantity.value = product.value.estoque
+    return
+  }
+
+  isAdding.value = true
+
+  try {
+    await carrinhoStore.adicionarItem(product.value.id, quantity.value)
+    
+    carrinhoStore.toggleCarrinho() 
+    
+  } catch (error) {
+    console.error('Erro ao adicionar:', error)
+    if (error.response && error.response.status === 401) {
+      const irParaLogin = confirm("Você precisa estar logado para comprar. Ir para login?")
+      if (irParaLogin) router.push('/LoginPage')
+    } else {
+      alert("Erro ao adicionar ao carrinho.")
+    }
+  } finally {
+    isAdding.value = false
   }
 }
 </script>
