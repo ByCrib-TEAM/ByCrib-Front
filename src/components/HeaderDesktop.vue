@@ -2,17 +2,59 @@
 import { ref, watch, nextTick, computed, onMounted, onUnmounted, onActivated } from 'vue'
 import SideMenu from './SideMenu.vue'
 import ShoppingCart from './ShoppingCart.vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { searchProdutos } from '../services/produtos'
 
 const showSearch = ref(false)
 const searchInput = ref(null)
 const showMenu = ref(false)
 const showCart = ref(false)
+const searchQuery = ref('')
+const searchResults = ref([])
+const isSearching = ref(false)
 
 // Mantém o melhor dos dois: inicia com window.scrollY se existir
 const scrollY = ref(window.scrollY || 0)
 
 const route = useRoute()
+const router = useRouter()
+
+// Função de pesquisa
+async function handleSearch(query) {
+  searchQuery.value = query
+  
+  if (query.trim().length < 2) {
+    searchResults.value = []
+    return
+  }
+  
+  isSearching.value = true
+  try {
+    const results = await searchProdutos(query)
+    searchResults.value = results
+  } catch (error) {
+    console.error('Erro ao pesquisar:', error)
+    searchResults.value = []
+  } finally {
+    isSearching.value = false
+  }
+}
+
+// Debounce para evitar muitas requisições
+const debouncedSearch = ref(null)
+function setDebouncedSearch() {
+  clearTimeout(debouncedSearch.value)
+  debouncedSearch.value = setTimeout(() => {
+    handleSearch(searchQuery.value)
+  }, 300)
+}
+
+function selectProduct(productId) {
+  closeSearch()
+  searchQuery.value = ''
+  searchResults.value = []
+  router.push(`/produto/${productId}`)
+}
 
 function closeSearch() {
   showSearch.value = false
@@ -100,16 +142,35 @@ onUnmounted(() => {
             <img src="/src/images/icons8-cardápio-50.png" alt="Menu icon" class="h-6 w-6" />
           </button>
 
-          <div class="relative hidden lg:block">
+          <div class="relative hidden lg:block w-64">
             <input
               type="text"
-              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white bg-transparent"
+              v-model="searchQuery"
+              @input="setDebouncedSearch"
+              class="text-white rounded-4xl px-3 py-0.5 pr-10 focus:outline-none ring-1 ring-white bg-transparent w-full"
+              placeholder="Pesquisar..."
             />
             <img
               src="/src/images/Search.png"
               alt="Search"
               class="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
             />
+            
+            <!-- Dropdown com resultados -->
+            <div 
+              v-if="searchResults.length > 0" 
+              class="absolute top-full left-0 right-0 mt-2 bg-black border border-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+            >
+              <div 
+                v-for="product in searchResults" 
+                :key="product.id"
+                @click="selectProduct(product.id)"
+                class="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-gray-700 last:border-b-0"
+              >
+                <p class="text-white font-medium">{{ product.nome }}</p>
+                <p class="text-gray-400 text-sm">{{ product.descricao?.substring(0, 50) }}...</p>
+              </div>
+            </div>
           </div>
 
           <button class="lg:hidden" @click="showSearch = true">
@@ -149,6 +210,8 @@ onUnmounted(() => {
             <input
               ref="searchInput"
               type="text"
+              v-model="searchQuery"
+              @input="setDebouncedSearch"
               placeholder="Pesquisar..."
               class="w-full text-white bg-black border border-white rounded-4xl px-4 py-2 pr-10 focus:outline-none"
             />
@@ -157,6 +220,22 @@ onUnmounted(() => {
               alt="Search icon"
               class="w-5 h-5 absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none"
             />
+            
+            <!-- Dropdown mobile com resultados -->
+            <div 
+              v-if="searchResults.length > 0" 
+              class="absolute top-full left-0 right-0 mt-2 bg-black border border-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+            >
+              <div 
+                v-for="product in searchResults" 
+                :key="product.id"
+                @click="selectProduct(product.id)"
+                class="px-4 py-2 hover:bg-gray-900 cursor-pointer border-b border-gray-700 last:border-b-0"
+              >
+                <p class="text-white font-medium">{{ product.nome }}</p>
+                <p class="text-gray-400 text-sm">{{ product.descricao?.substring(0, 50) }}...</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
