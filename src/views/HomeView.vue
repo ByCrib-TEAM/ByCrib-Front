@@ -15,7 +15,7 @@ onMounted(async () => {
     console.error('Erro ao carregar produtos:', error)
   }
   nextTick(() => {
-    window.scrollTo(0, savedScrollY);
+    window.scrollTo(0);
   });
   
 })

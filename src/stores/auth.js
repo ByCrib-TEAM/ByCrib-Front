@@ -1,91 +1,76 @@
-import { defineStore } from 'pinia';
-import AuthService from '@/services/auth';
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import API_BASE from '@/services/api'
 
-export const useAuthStore = defineStore('auth', {
-  state: () => ({
-    user: JSON.parse(localStorage.getItem('user') || 'null'),
-    token: localStorage.getItem('accessToken') || null,
-    refreshToken: localStorage.getItem('refreshToken') || null,
-    loading: false,
-    error: null,
-  }),
-  
-  getters: {
-    isAuthenticated: (state) => !!state.token,
-  },
+export const useAuth = defineStore('auth', () => {
+  const loadingStore = useLoading()
+  const router = useRouter()
 
-  actions: {
-    async login(credentials) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const data = await AuthService.login(credentials);
-        
-        this.token = data.access;
-        this.refreshToken = data.refresh;
-        
-        localStorage.setItem('accessToken', this.token);
-        localStorage.setItem('refreshToken', this.refreshToken);
-        
-        if (credentials.email) {
-            this.user = { email: credentials.email };
-            localStorage.setItem('user', JSON.stringify(this.user));
-        }
+  const accessToken = ref(localStorage.getItem('access') || '')
+  const refreshToken = ref(localStorage.getItem('refresh') || '')
 
-        return true;
-      } catch (err) {
-        console.error("Login Error:", err);
-        
-        if (err.response && err.response.data) {
-            this.error = err.response.data.detail || 
-                         err.response.data.non_field_errors?.[0] || 
-                         'Credenciais inválidas.';
-        } else if (err.request) {
-            this.error = 'Erro de conexão com o servidor.';
-        } else {
-            this.error = 'Erro desconhecido ao tentar fazer login.';
-        }
-        
-        return false;
-      } finally {
-        this.loading = false;
+  const user = ref(null)
+  const isLoggedIn = computed(() => {
+    return !!accessToken.value 
+  })
+
+  const fetchCurrentUser = async () => {
+    if (!accessToken.value) {
+      user.value = null
+      return
+    }
+    const res = await API_BASE.getget('api/users/me/', {
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`
       }
-    },
+    })
+    user.value = res.data
+  }
 
-    async register(userData) {
-      this.loading = true;
-      this.error = null;
-      try {
-        await AuthService.register(userData);
-        return true;
-      } catch (err) {
-        console.error("Register Error:", err);
-        
-        if (err.response && err.response.data) {
-            const firstKey = Object.keys(err.response.data)[0];
-            const firstError = err.response.data[firstKey];
-            
-            if (Array.isArray(firstError)) {
-                this.error = `${firstKey}: ${firstError[0]}`;
-            } else {
-                this.error = typeof firstError === 'string' ? firstError : 'Erro na validação dos dados.';
-            }
-        } else {
-            this.error = 'Erro de conexão ao tentar registrar.';
-        }
-        return false;
-      } finally {
-        this.loading = false;
-      }
-    },
 
-    logout() {
-      this.user = null;
-      this.token = null;
-      this.refreshToken = null;
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+  const login = async (email, password) => {
+    try {
+      loadingStore.isLoading = true
+      const res = await API_BASE.post('token/', { email, password })
+      accessToken.value = res.data.access
+      refreshToken.value = res.data.refresh
+
+      localStorage.setItem('access', accessToken.value)
+      localStorage.setItem('refresh', refreshToken.value)
+
+      await fetchCurrentUser()
+      await router.push('/')
+      loadingStore.isLoading = false
+
+    } catch (err) {
+      console.log('Login error: ', err.response?.data || err.message)
+      loadingStore.isLoading = false
+      throw err
     }
   }
-});
+
+const register = async (name, email, password) => {
+  try {
+    loadingStore.isLoading = true
+    const res = await API_BASE.post('api/users/', { name, email, password })
+    loadingStore.isLoading = false
+    router.push({path: '/login', query: { registered: 'true' } })
+
+  } catch (err) {
+    console.log('Registration error: ', err.response?.data || err.message)
+    loadingStore.isLoading = false
+    throw err
+
+  }
+}
+  const logout = () => {
+    accessToken.value = ''
+    refreshToken.value = ''
+    localStorage.removeItem('access')
+    localStorage.removeItem('refresh')
+    user.value = null
+  }
+
+  return { login, fetchCurrentUser, logout, user, accessToken, refreshToken, isLoggedIn, firstLetter }
+})
