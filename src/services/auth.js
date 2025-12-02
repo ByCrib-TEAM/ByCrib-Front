@@ -1,18 +1,45 @@
-import api from "./api";
+import api from "@/services/api";
 
-export default {
-  async login(credentials) {
-    const response = await api.post('token/', credentials);
-    return response.data;
-  },
+class AuthService {
+    async login(email, password) {
+        try {
+            const response = await api.post('token/', { email, password });
+            return response.data;
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
+        }
+    }
 
-  async register(userData) {
-    const response = await api.post('register/', userData);
-    return response.data;
-  },
+    async register(userData) {
+        try {
+            const response = await api.post('usuarios/', userData);
+            return response.data;
+        } catch (error) {
+            console.error('Register error:', error);
+            throw error;
+        }
+    }
 
-  async getMe() {
-    const response = await api.get('usuarios/me/'); 
-    return response.data;
-  }
-};
+    async getUserProfile(token) {
+        try {
+            const response = await api.get('usuarios/me/');
+            return response.data;
+        } catch (error) {
+            console.error('Get user profile error:', error);
+            throw error;
+        }
+    }
+
+    async refreshToken(refreshToken) {
+        try {
+            const response = await api.post('token/refresh/', { refresh: refreshToken });
+            return response.data;
+        } catch (error) {
+            console.error('Refresh token error:', error);
+            throw error;
+        }
+    }
+}
+
+export default new AuthService();

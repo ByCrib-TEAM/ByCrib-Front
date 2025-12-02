@@ -1,6 +1,7 @@
 <script setup>
-import { ref, reactive, } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 // Composable do Vue Router
 const router = useRouter()
@@ -25,6 +26,9 @@ const validatePassword = () => {
   passwordWarning.value = form.password.length > 0 && form.password.length < 6
 }
 
+// Pinia auth store
+const authStore = useAuthStore()
+
 // Função de login
 const handleLogin = async () => {
   if (isLoading.value) return
@@ -37,20 +41,12 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    // Simular chamada de API
-    console.log('Fazendo login com:', {
-      email: form.email,
-      password: form.password
-    })
-
-    // Simular delay da API
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-   
-
-    // Navegar para dashboard após login
-    router.push('/')
-
+    const success = await authStore.login(form.email, form.password)
+    if (success) {
+      router.push('/')
+    } else {
+      alert(authStore.error || 'Credenciais inválidas')
+    }
   } catch (error) {
     console.error('Erro no login:', error)
     alert('Erro ao fazer login. Tente novamente.')

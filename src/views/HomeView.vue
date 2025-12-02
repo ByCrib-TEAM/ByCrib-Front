@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { getAllProducts } from '../services/produtos' // ajuste o caminho conforme seu projeto
 import CardComponent from '../components/CardComponent.vue'
 import { useRouter } from 'vue-router'
-
+                  
 const produtos = ref([])
 const router = useRouter()
 

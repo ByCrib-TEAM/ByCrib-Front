@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 // Estado reativo
 const isLoading = ref(false)
@@ -56,6 +57,9 @@ const isFormValid = computed(() => {
         !confirmPasswordError.value
 })
 
+// Pinia auth store
+const authStore = useAuthStore()
+
 // Função de cadastro atualizada com redirecionamento
 const handleSignup = async () => {
     if (isLoading.value || !isFormValid.value) return
@@ -78,24 +82,27 @@ const handleSignup = async () => {
     isLoading.value = true
 
     try {
-        // Simular chamada de API
-        console.log('Fazendo cadastro com:', {
+        const payload = {
             name: form.name,
             email: form.email,
-            password: form.password
-        })
+            password: form.password,
+            confirm_password: form.confirmPassword
+        }
 
-        // Simular delay da API
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        const success = await authStore.register(payload)
 
-        // Limpar formulário após sucesso
+        if (success) {
+            // register já faz login automático na store
+            await router.push('/')
+        } else {
+            alert(authStore.error || 'Erro ao cadastrar usuário')
+        }
+
+        // Limpar formulário após sucesso (ou mesmo se falhar, opcional)
         form.name = ''
         form.email = ''
         form.password = ''
         form.confirmPassword = ''
-
-        // Redirecionar para a página inicial após cadastro bem-sucedido
-        await router.push('/')
 
     } catch (error) {
         console.error('Erro no cadastro:', error)
